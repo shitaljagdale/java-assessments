@@ -1,9 +1,16 @@
 package com.ibm.empmanagment;
 import java.util.Scanner;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EmployeeService {
 	Scanner sc=new Scanner(System.in);
@@ -36,53 +43,58 @@ public class EmployeeService {
 	 String department;
 	 double salary;
 	 
-	 
+	 private boolean validate( Predicate<Employee> validator,Employee emp) {
+		return  validator.test(emp);
+			
+		}
 
+	 public static void handleErrMsg(String errMsg,Consumer<String> consumer) {
+		 consumer.accept(errMsg);
+	 }
 	public void addEmp() {
 		
 		System.out.println("Enter Emp id");
-		try {
-		id=sc.nextInt();
-		}
-		catch(Exception e) {
-			System.out.println("Enter valid id");
-	    }
-		sc.nextLine(); 
-	//	id=sc.nextInt();
+	    id=sc.nextInt();
 	    System.out.print("Enter Emp name :");
 	     name=sc.next();
-	     
-	    System.out.print("Enter Emp age :");
-	    try {
-	    	age=sc.nextInt();
-	    }
-	     catch(Exception e) {
-	    	 System.out.println("Enter valid age");
-	    	 //age=sc.nextInt();
-	     }
-	    sc.nextLine();//for clear the buffer
+	     System.out.print("Enter Emp age :");
 	    age=sc.nextInt();
-	    
+	    emp.setAge(age);
 	    System.out.print("Enter Emp desiganation :");
 		desiganation=sc.next();
 		System.out.print("Enter Emp department :");
 		department=sc.next();
 		System.out.print("Enter Emp salary :");
-		try {
 		salary=sc.nextDouble();
-		}
-		catch(Exception e) {
-			System.out.println("Enter valid salary");
-		}
-		sc.nextLine();
-		//salary=sc.nextDouble();
-		System.out.println("Employee added successfully...");
+		
+		// validation using annonymous inner class
+				/* boolean status= validate(new  ValidateEmployee() {
+					  public boolean check(Employee emp) {
+						  return emp.getAge() > 18 && emp.getSalary()>20000 ;
+						  
+					  }
+				  },emp);
+				*/
+				//validation using lambda expression
+				boolean status=validate(emp-> emp.getAge()>0,emp);
+				 if(status) {
+					 System.out.println("Employee added successfully...");
+				 }
+				 else {
+					 handleErrMsg("invalid age",msg->{
+						System.out.println("Error Occured "+msg);
+						 System.out.println(msg);
+					 });
+				 }
+				 
+				 
+		
 		Employee e1=new Employee(id,name,age,desiganation,department,salary);
 		empset.add(e1);
 		
 	}
 	
-	public void viewEmp() {
+	 public void viewEmp() {
 		//System.out.print("Enter id to view emp : ");
 	
 		id=sc.nextInt();
@@ -143,7 +155,38 @@ public class EmployeeService {
 		
 	}
 	public void printStatistics() {
-		int count=0;
+		
+		List<Employee> empagegreaterthan30=empset.stream().filter(emp->emp.getAge()>30).collect(Collectors.toList());
+		long empagegreaterthan30cnt=empset.stream().filter(emp->emp.getAge()>30).count();
+	    System.out.println(empagegreaterthan30);
+	  
+	    System.out.println("Count of Employees whose age greater than 30 :"+empagegreaterthan30cnt);
+		
+	    List<Integer> empidlist=empset.stream().filter(emp->emp.getAge()>30).map(emp->emp.getId()).collect(Collectors.toList());
+	    System.out.println("List employee id older than 30 year"+empidlist);
+	    
+	   Map<String,Long> countbydept=
+		    empset.stream().collect(Collectors.groupingBy(Employee::getDepartment,Collectors.counting()));
+	   System.out.println("Department wise employee count");
+	  System.out.println(countbydept);
+	   
+	  Map<String,Double> avgSalryByDept=
+		 empset.stream().collect(Collectors.groupingBy(Employee::getDepartment,Collectors.averagingDouble(Employee::getSalary)));
+		  System.out.println("Avrag salary by department");
+		  System.out.println(avgSalryByDept);
+		  
+		 DoubleSummaryStatistics ll= empset.stream().collect(Collectors.summarizingDouble(Employee::getSalary));
+	     System.out.println("Sum of Sal"+ll);
+	     
+	     List<String> dept= countbydept.entrySet().stream().filter(e->e.getValue()>2).map(Map.Entry::getKey).collect(Collectors.toList());
+	     System.out.println("Department who has more than 2 employee "+dept);
+	     
+	     List<Employee> emps=   empset.stream().filter(emp->emp.getName().startsWith("s")).collect(Collectors.toList());
+	   System.out.println(emps);
+	   
+	  // countbydept.entrySet().stream().sorted()
+	     /*	int count=0;
+	      * 
 		int testingCount=0;
 		int CoCount=0;
 		int ItCount=0;
@@ -240,6 +283,6 @@ public class EmployeeService {
 		}
 		System.out.println("Department having more than 3 emp :" +deptMoreThan3Emp);
 		
-		
+		*/
 	}
 }
