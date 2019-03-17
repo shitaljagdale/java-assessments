@@ -1,41 +1,59 @@
 package com.ibm.empmanagment;
 
-public class Employee implements Comparable<Object>{
+import java.io.Serializable;
+import java.time.LocalDate;
+
+public class Employee implements Comparable<Object>,Serializable{
 	private int id;
 	private String name;
-	private int age;
+	private int  age;
 	private String desiganation;
 	private String department;
 	private double salary;
+	private LocalDate DOB ;
 	
-	
-	
-
-	@Override
-	public String toString() {
-		return "Employee [id=" + id + ", name=" + name + ", age=" + age + ", desiganation=" + desiganation
-				+ ", department=" + department + ", salary=" + salary + "]";
-	}
-
 	public Employee() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Employee(int id, String name, int age, String desiganation, String department, double salary) {
+	public Employee(int id, String name, int age, String desiganation, String department, double salary,
+			LocalDate DOB) {
 		super();
 		this.id = id;
-	    this.name = name;
+		this.name = name;
 		this.age = age;
 		this.desiganation = desiganation;
 		this.department = department;
 		this.salary = salary;
+		this.DOB = DOB;
+	}
+
+    @Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", age=" + age + ", desiganation=" + desiganation
+				+ ", department=" + department + ", salary=" + salary + ", DOB=" + DOB + "]";
+	}
+
+   public LocalDate getDOB() {
+		return DOB;
+	}
+
+	public void setDOB(LocalDate dOB) {
+		DOB = dOB;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+   public void setId(int id) {
 		this.id = id;
 	}
 
@@ -46,16 +64,8 @@ public class Employee implements Comparable<Object>{
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public String getDesiganation() {
+   
+  public String getDesiganation() {
 		return desiganation;
 	}
 
